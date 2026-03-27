@@ -1,0 +1,23 @@
+[project]
+name = "quant-guild-library"
+version = "0.1.0"
+description = "A premium Markdown-to-HTML server for the Quant Guild Library"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "markdown-it-py",
+    "mdit-py-plugins",
+    "linkify-it-py",
+    "jinja2",
+]
+
+[project.scripts]
+book-app = "book_app.backend.main:start"
+
+[tool.setuptools]
+packages = ["book_app"]
+
+[tool.uv]
+managed = true
+package = true

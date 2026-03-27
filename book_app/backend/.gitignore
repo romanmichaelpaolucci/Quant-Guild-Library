@@ -1,0 +1,9 @@
+*.py[cod]
+*$py.class
+env/
+venv/
+ENV/
+.env
+.pytest_cache/
+.coverage
+htmlcov/
