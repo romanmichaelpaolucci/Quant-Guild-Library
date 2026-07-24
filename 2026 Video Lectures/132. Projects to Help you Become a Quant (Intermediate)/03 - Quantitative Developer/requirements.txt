@@ -1,0 +1,11 @@
+# Order Book Simulator — dependencies
+#
+# The GUI uses only the Python standard library (tkinter ships with CPython on
+# Windows/macOS and via the `python3-tk` package on Linux).
+
+# Sorted price levels for the matching engine (O(log L) best-bid/ask + insert).
+sortedcontainers>=2.4.0
+
+# Optional: not required by the engine, simulator, or GUI. Installed only if you
+# want to extend the project with vectorised analysis of the trade tape, etc.
+# numpy>=1.24

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ASTB // PORTFOLIO TERMINAL</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/terminal.css') }}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin />
+  <script src="https://cdn.jsdelivr.net/npm/marked@14.1.3/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
+  <div class="terminal">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">ASTB</span>
+        <span class="brand-sub">AI STOCK TRADING BOT</span>
+      </div>
+      <div class="topbar-meta" id="connection-meta"
+           data-source="{{ data_source }}"
+           data-connected="{{ 'true' if connection.connected else 'false' }}">
+        <span class="pulse{% if not connection.connected %} is-offline{% endif %}" aria-hidden="true"></span>
+        <span id="conn-status">{{ connection.status_label }}</span>
+        <span class="sep">|</span>
+        <span id="clock">{{ as_of }}</span>
+        <span class="sep">|</span>
+        <span id="conn-port">{{ connection.label }}</span>
+        <span class="sep">|</span>
+        <span id="conn-source">{% if data_source == 'demo' %}DEMO FALLBACK{% else %}LIVE TWS{% endif %}</span>
+        <span class="sep">|</span>
+        <span id="brain-meta" title="{{ brain.summary if brain else '' }}">
+          BRAIN
+          T{{ brain.counts.active_theses if brain and brain.counts else 0 }}
+          · TR{{ brain.counts.trades if brain and brain.counts else 0 }}
+          · G{{ brain.counts.goal_history if brain and brain.counts else 0 }}
+        </span>
+      </div>
+    </header>
+
+        <section class="panel metrics-panel">
+      <div class="panel-head">
+        <h1>KEY PORTFOLIO METRICS</h1>
+        <span class="panel-tag" id="metrics-source-tag">{{ 'TWS ACCOUNT' if data_source == 'tws' else 'DEMO' }}</span>
+      </div>
+      <div class="metrics-grid" id="metrics-grid">
+        {% for m in metrics %}
+        <article class="metric tone-{{ m.tone }}" data-metric="{{ m.id }}">
+          <div class="metric-label">{{ m.label }}</div>
+          <div class="metric-value">{{ m.value }}</div>
+          <div class="metric-delta">{{ m.delta }}</div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <div class="workspace">
+      <aside class="left-rail">
+        <section class="panel holdings-panel">
+          <div class="panel-head">
+            <h2>HOLDINGS</h2>
+            <span class="panel-tag" id="holdings-source-tag">{{ 'TWS' if data_source == 'tws' else 'DEMO' }}</span>
+          </div>
+          <div class="table-wrap">
+            <table class="holdings-table" id="holdings-table">
+              <thead>
+                <tr>
+                  <th>SYM</th>
+                  <th>LAST</th>
+                  <th>P&amp;L%</th>
+                  <th>WGT%</th>
+                </tr>
+              </thead>
+              <tbody id="holdings-tbody">
+                {% for h in holdings %}
+                <tr
+                  class="holding-row{% if loop.first %} is-selected{% endif %}"
+                  data-symbol="{{ h.symbol }}"
+                  tabindex="0"
+                >
+                  <td class="sym">{{ h.symbol }}</td>
+                  <td class="num">{{ "%.2f"|format(h.last) }}</td>
+                  <td class="num {% if h.pnl_pct >= 0 %}up{% else %}down{% endif %}">
+                    {{ "%+.2f"|format(h.pnl_pct) }}
+                  </td>
+                  <td class="num">{{ "%.2f"|format(h.weight) }}</td>
+                </tr>
+                {% else %}
+                <tr class="holding-empty">
+                  <td colspan="4">No stock positions</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel thesis-panel">
+          <div class="panel-head">
+            <h2>THESIS <span class="selected-sym" id="thesis-symbol">({{ holdings[0].symbol if holdings else '—' }})</span></h2>
+            <div class="panel-head-actions">
+              <button
+                type="button"
+                class="text-btn"
+                id="thesis-reeval-btn"
+                title="Ask the strategy desk to revaluate this thesis"
+              >REEVALUATE</button>
+              <span class="panel-tag" id="thesis-source-tag">
+                {% if holdings and holdings[0].thesis and not holdings[0].thesis.missing %}
+                  JSON · {{ holdings[0].thesis.saved_at }}
+                {% else %}
+                  AWAITING LLM
+                {% endif %}
+              </span>
+            </div>
+          </div>
+          <div class="thesis-body" id="thesis-body"
+               data-holdings='{{ holdings | tojson }}'>
+            <div class="thesis-field">
+              <label>NARRATIVE</label>
+              <p id="thesis-narrative">
+                {% if holdings and holdings[0].thesis and not holdings[0].thesis.missing %}
+                  {{ holdings[0].thesis.narrative }}
+                {% else %}
+                  No thesis saved yet. Ask the agent to research this name and call save_thesis.
+                {% endif %}
+              </p>
+            </div>
+            <div class="thesis-meta">
+              <div class="thesis-field">
+                <label>TARGET</label>
+                <p id="thesis-target">
+                  {% if holdings and holdings[0].thesis and holdings[0].thesis.target is not none %}
+                    ${{ "%.2f"|format(holdings[0].thesis.target) }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </p>
+              </div>
+              <div class="thesis-field">
+                <label>COST BASIS</label>
+                <p id="thesis-entry">
+                  {% if holdings and holdings[0].thesis and holdings[0].thesis.cost_basis is not none %}
+                    ${{ "%.2f"|format(holdings[0].thesis.cost_basis) }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </p>
+              </div>
+              <div class="thesis-field">
+                <label>CONVICTION</label>
+                <p id="thesis-conviction">
+                  {{ holdings[0].thesis.conviction if holdings and holdings[0].thesis and not holdings[0].thesis.missing else '—' }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <main class="right-rail">
+        <section class="panel objectives-panel" id="objectives-panel">
+          <div class="panel-head">
+            <h2>PORTFOLIO OBJECTIVES</h2>
+            <div class="panel-head-actions">
+              <span class="panel-tag" id="objectives-status">
+                {% if objectives.saved_at %}SAVED {{ objectives.saved_at }}{% else %}RISK · GOALS · PREFERENCES{% endif %}
+              </span>
+              <div class="obj-edit-actions" id="obj-view-actions">
+                <button type="button" class="icon-btn" id="obj-edit-btn" title="Edit portfolio goals" aria-label="Edit portfolio goals">
+                  <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                    <path fill="currentColor" d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm14.71-9.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="obj-edit-actions is-hidden" id="obj-save-actions">
+                <button type="button" class="text-btn" id="obj-cancel-btn">CANCEL</button>
+                <button type="button" class="text-btn primary" id="obj-save-btn">SAVE</button>
+              </div>
+            </div>
+          </div>
+          <div class="objectives-grid" id="objectives-grid" data-mode="view">
+            <div class="obj-item">
+              <label>Risk Tolerance</label>
+              <span class="obj-value" data-field="risk_tolerance">{{ objectives.risk_tolerance }}</span>
+              <input class="obj-input" data-field="risk_tolerance" type="text" value="{{ objectives.risk_tolerance }}" hidden />
+            </div>
+            <div class="obj-item">
+              <label>Max Drawdown</label>
+              <span class="obj-value" data-field="max_drawdown">{{ objectives.max_drawdown }}</span>
+              <input class="obj-input" data-field="max_drawdown" type="text" value="{{ objectives.max_drawdown }}" hidden />
+            </div>
+            <div class="obj-item">
+              <label>Target Return</label>
+              <span class="obj-value" data-field="target_return">{{ objectives.target_return }}</span>
+              <input class="obj-input" data-field="target_return" type="text" value="{{ objectives.target_return }}" hidden />
+            </div>
+            <div class="obj-item">
+              <label>Horizon</label>
+              <span class="obj-value" data-field="horizon">{{ objectives.horizon }}</span>
+              <input class="obj-input" data-field="horizon" type="text" value="{{ objectives.horizon }}" hidden />
+            </div>
+            <div class="obj-item">
+              <label>Max Single Name</label>
+              <span class="obj-value" data-field="max_single_name">{{ objectives.max_single_name }}</span>
+              <input class="obj-input" data-field="max_single_name" type="text" value="{{ objectives.max_single_name }}" hidden />
+            </div>
+            <div class="obj-item">
+              <label>Cash Floor</label>
+              <span class="obj-value" data-field="cash_floor">{{ objectives.cash_floor }}</span>
+              <input class="obj-input" data-field="cash_floor" type="text" value="{{ objectives.cash_floor }}" hidden />
+            </div>
+            <div class="obj-item wide">
+              <label>Industry Preferences</label>
+              <span class="obj-value tags" data-field="industries" data-type="tags">
+                {% for ind in objectives.industries %}
+                <span class="tag">{{ ind }}</span>
+                {% endfor %}
+              </span>
+              <input
+                class="obj-input"
+                data-field="industries"
+                data-type="tags"
+                type="text"
+                value="{{ objectives.industries | join(', ') }}"
+                placeholder="Comma-separated"
+                hidden
+              />
+            </div>
+            <div class="obj-item wide">
+              <label>Avoid</label>
+              <span class="obj-value tags" data-field="avoid" data-type="tags muted">
+                {% for a in objectives.avoid %}
+                <span class="tag muted">{{ a }}</span>
+                {% endfor %}
+              </span>
+              <input
+                class="obj-input"
+                data-field="avoid"
+                data-type="tags"
+                type="text"
+                value="{{ objectives.avoid | join(', ') }}"
+                placeholder="Comma-separated"
+                hidden
+              />
+            </div>
+            <div class="obj-item full">
+              <label>Mandate Notes</label>
+              <span class="obj-value" data-field="notes">{{ objectives.notes }}</span>
+              <textarea class="obj-input obj-textarea" data-field="notes" rows="2" hidden>{{ objectives.notes }}</textarea>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel chat-panel">
+          <div class="panel-head">
+            <div class="panel-head-title">
+              <h2>STRATEGY DESK</h2>
+              <div class="prompt-ask" role="group" aria-label="Preconfigured portfolio prompts">
+                <select id="prompt-select" aria-label="Choose a portfolio prompt">
+                  <option value="" selected disabled>Quick prompts…</option>
+                  <option value="What're my main risks?">What're my main risks?</option>
+                  <option value="Does my portfolio align with my goals?">Does my portfolio align with my goals?</option>
+                  <option value="What is my portfolio TTM alpha and beta?">What is my portfolio TTM alpha and beta?</option>
+                </select>
+                <button type="button" class="text-btn primary" id="prompt-ask-btn" disabled>ASK</button>
+              </div>
+            </div>
+            <div class="panel-head-actions">
+              <div class="auto-controls">
+                <label class="auto-toggle" title="Server-side async thesis reevaluation on a background thread">
+                  <input type="checkbox" id="auto-toggle" {% if ux and ux.automated %}checked{% endif %} />
+                  <span class="auto-toggle-track" aria-hidden="true"></span>
+                  <span class="auto-toggle-label">AUTOMATED</span>
+                </label>
+                <div class="auto-schedule" role="group" aria-label="Automation interval">
+                  <span class="auto-schedule-every">EVERY</span>
+                  <select id="auto-every" aria-label="Interval amount">
+                    {% for n in [1, 5, 10, 15, 30] %}
+                    <option value="{{ n }}" {% if ux and ux.auto_every == n %}selected{% endif %}>{{ n }}</option>
+                    {% endfor %}
+                  </select>
+                  <select id="auto-unit" aria-label="Interval unit">
+                    <option value="minutes" {% if not ux or ux.auto_unit == 'minutes' %}selected{% endif %}>minutes</option>
+                    <option value="hours" {% if ux and ux.auto_unit == 'hours' %}selected{% endif %}>hours</option>
+                    <option value="days" {% if ux and ux.auto_unit == 'days' %}selected{% endif %}>days</option>
+                  </select>
+                </div>
+              </div>
+              <span class="panel-tag" id="auto-status-tag">
+                {% if ux and ux.automated %}ON · {{ ux.interval_label }}{% else %}AI ADVISOR{% endif %}
+              </span>
+            </div>
+          </div>
+          <div class="chat-log" id="chat-log" aria-live="polite">
+            {% for msg in chat_seed %}
+            <div class="chat-msg {{ msg.role }}">
+              <div class="chat-role">{{ "ASTB" if msg.role == "assistant" else "YOU" }}</div>
+              <div class="chat-text">{{ msg.content }}</div>
+            </div>
+            {% endfor %}
+          </div>
+          <form class="chat-form" id="chat-form" autocomplete="off">
+            <input
+              type="text"
+              id="chat-input"
+              name="message"
+              placeholder="recalculate thesis — is it still intact given current VaR?"
+              maxlength="2000"
+              required
+            />
+            <button type="submit" id="chat-send">SEND</button>
+          </form>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

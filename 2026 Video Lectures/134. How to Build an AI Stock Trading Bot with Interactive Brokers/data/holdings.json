@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "symbol": "AVGO",
+      "name": "AVGO",
+      "qty": 100.0,
+      "last": 392.47,
+      "avg_cost": 412.54,
+      "mkt_value": 39247.0,
+      "pnl_pct": -4.86,
+      "weight": 38.66,
+      "sector": "",
+      "unrealized_pnl": -2007.0
+    },
+    {
+      "symbol": "AAPL",
+      "name": "Apple Inc",
+      "qty": 100.0,
+      "last": 320.94,
+      "avg_cost": 304.062,
+      "mkt_value": 32094.0,
+      "pnl_pct": 5.55,
+      "weight": 31.61,
+      "sector": "Technology",
+      "unrealized_pnl": 1687.8
+    },
+    {
+      "symbol": "NVDA",
+      "name": "NVIDIA Corp",
+      "qty": -100.0,
+      "last": 208.4,
+      "avg_cost": 219.6853,
+      "mkt_value": -20840.0,
+      "pnl_pct": 5.14,
+      "weight": -20.53,
+      "sector": "Semiconductors",
+      "unrealized_pnl": 1128.53
+    }
+  ]
+}

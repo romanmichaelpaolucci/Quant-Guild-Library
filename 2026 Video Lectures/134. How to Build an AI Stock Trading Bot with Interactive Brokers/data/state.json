@@ -1,0 +1,147 @@
+{
+  "updated_at": "2026-07-23T21:42:37Z",
+  "summary": "Tracked holdings in UI: 3. Goals (2026-07-23T20:50:46Z): risk=Moderate-Aggressive, maxDD=15%, targetRet=18% annualized, horizon=12–24 months, maxName=12% NAV, cashFloor=5%. Industries: Semiconductors, Software, Healthcare, Industrials. Avoid: Pure tobacco, SPACs. Active theses (7): AAPL: conviction=High, target=$320.60, status=active, saved=2026-07-23T21:40:50Z; AMD: conviction=Medium, target=$190.00, status=active, saved=2026-07-23T20:50:16Z; AVGO: conviction=Medium, target=$393.74, status=active, saved=2026-07-23T21:40:50Z; JPM: conviction=Medium, target=$235.00, status=active, saved=2026-07-23T20:50:16Z; MSFT: conviction=High, target=$510.00, status=active, saved=2026-07-23T20:50:16Z; NVDA: conviction=High, target=$160.00, status=active, saved=2026-07-23T20:50:16Z; UNH: conviction=Medium, target=$560.00, status=active, saved=2026-07-23T20:50:16Z Recent trades: 2026-07-23T21:40:50Z SELL 68.0 AVGO [filled]; 2026-07-23T21:40:50Z SELL 100.0 AAPL [filled]; 2026-07-23T21:38:48Z BUY 26.0 GOOGL [filled] UI risk/metrics snapshot: PORTFOLIO NAV=$101,531; CASH=$50,992; BUYING POWER=$282,149; UNREALIZED P&L=+$813.33; DAY P&L=$0.00; GROSS EXPOSURE=$92,183. Standing rule: do not abandon a high-conviction thesis on short-term noise; only revise conviction or supersede when the core thesis is invalidated.",
+  "goals": {
+    "risk_tolerance": "Moderate-Aggressive",
+    "max_drawdown": "15%",
+    "target_return": "18% annualized",
+    "horizon": "12–24 months",
+    "max_single_name": "12% NAV",
+    "cash_floor": "5%",
+    "industries": [
+      "Semiconductors",
+      "Software",
+      "Healthcare",
+      "Industrials"
+    ],
+    "avoid": [
+      "Pure tobacco",
+      "SPACs"
+    ],
+    "notes": "Prefer liquid large/mid-cap; allow selective AI infrastructure overweights.",
+    "saved_at": "2026-07-23T20:50:46Z"
+  },
+  "active_theses": [
+    {
+      "id": "thesis_fb8217308a",
+      "symbol": "AAPL",
+      "conviction": "High",
+      "target": 320.6,
+      "entry": 178.2,
+      "cost_basis": 178.2,
+      "horizon": "",
+      "saved_at": "2026-07-23T21:40:50Z",
+      "narrative_preview": "Services mix and installed base monetization continue to expand margins. AI on-device features should support upgrade cycles without requiring a hardware step-change narrative. Given the current market price, the thesis has been realized and profit taken."
+    },
+    {
+      "id": "thesis_796aff0fd6",
+      "symbol": "AMD",
+      "conviction": "Medium",
+      "target": 190.0,
+      "entry": 132.5,
+      "cost_basis": 132.5,
+      "horizon": "12M",
+      "saved_at": "2026-07-23T20:50:16Z",
+      "narrative_preview": "Share gains in datacenter CPUs/GPUs vs NVDA/INTC. Thesis is relative valuation + MI300 adoption; not a pure beta bet on semis."
+    },
+    {
+      "id": "thesis_edaee165bb",
+      "symbol": "AVGO",
+      "conviction": "Medium",
+      "target": 393.74,
+      "entry": 412.54,
+      "cost_basis": 412.54,
+      "horizon": "",
+      "saved_at": "2026-07-23T21:40:50Z",
+      "narrative_preview": "Risk trim executed to reduce concentration. Awaiting new thesis development."
+    },
+    {
+      "id": "thesis_96ab731bfa",
+      "symbol": "JPM",
+      "conviction": "Medium",
+      "target": 235.0,
+      "entry": 185.0,
+      "cost_basis": 185.0,
+      "horizon": "12M",
+      "saved_at": "2026-07-23T20:50:16Z",
+      "narrative_preview": "NII resilience and capital return support downside cushion. Used as cyclical diversifier vs tech overweight."
+    },
+    {
+      "id": "thesis_ac5cc9ca17",
+      "symbol": "MSFT",
+      "conviction": "High",
+      "target": 510.0,
+      "entry": 380.0,
+      "cost_basis": 380.0,
+      "horizon": "24M",
+      "saved_at": "2026-07-23T20:50:16Z",
+      "narrative_preview": "Azure + Copilot attach rates underpin durable EPS growth. Core ballast position for AI exposure with lower idiosyncratic risk than pure-play semis."
+    },
+    {
+      "id": "thesis_fc8e338c53",
+      "symbol": "NVDA",
+      "conviction": "High",
+      "target": 160.0,
+      "entry": 92.1,
+      "cost_basis": 92.1,
+      "horizon": "18M",
+      "saved_at": "2026-07-23T20:50:16Z",
+      "narrative_preview": "Datacenter GPU demand remains the primary portfolio growth engine. Watching CUDA moat vs ASIC displacement risk; size capped by single-name limit."
+    },
+    {
+      "id": "thesis_2130bd2114",
+      "symbol": "UNH",
+      "conviction": "Medium",
+      "target": 560.0,
+      "entry": 490.0,
+      "cost_basis": 490.0,
+      "horizon": "18M",
+      "saved_at": "2026-07-23T20:50:16Z",
+      "narrative_preview": "Defensive growth and Optum optionality. Position sized for sector balance; thesis under review after regulatory headlines."
+    }
+  ],
+  "recent_trades": [
+    {
+      "id": "trade_eefe41d0e2",
+      "saved_at": "2026-07-23T21:40:50Z",
+      "symbol": "AVGO",
+      "side": "SELL",
+      "qty": 68.0,
+      "price": null,
+      "rationale": "Risk trim to max_single_name",
+      "thesis_id": "",
+      "status": "filled",
+      "source": "agent"
+    },
+    {
+      "id": "trade_cf1e776f4d",
+      "saved_at": "2026-07-23T21:40:50Z",
+      "symbol": "AAPL",
+      "side": "SELL",
+      "qty": 100.0,
+      "price": null,
+      "rationale": "Take-profit at target",
+      "thesis_id": "",
+      "status": "filled",
+      "source": "agent"
+    },
+    {
+      "id": "trade_4d0528d89d",
+      "saved_at": "2026-07-23T21:38:48Z",
+      "symbol": "GOOGL",
+      "side": "BUY",
+      "qty": 26.0,
+      "price": null,
+      "rationale": "Adding GOOGL for diversification in line with portfolio objectives.",
+      "thesis_id": "",
+      "status": "filled",
+      "source": "agent"
+    }
+  ],
+  "goal_history_count": 3,
+  "counts": {
+    "active_theses": 7,
+    "trades": 3,
+    "goal_history": 3
+  }
+}

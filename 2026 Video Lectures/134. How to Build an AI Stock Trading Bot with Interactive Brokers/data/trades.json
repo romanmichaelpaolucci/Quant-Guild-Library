@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "id": "trade_4d0528d89d",
+      "saved_at": "2026-07-23T21:38:48Z",
+      "symbol": "GOOGL",
+      "side": "BUY",
+      "qty": 26.0,
+      "price": null,
+      "rationale": "Adding GOOGL for diversification in line with portfolio objectives.",
+      "thesis_id": "",
+      "status": "filled",
+      "source": "agent"
+    },
+    {
+      "id": "trade_cf1e776f4d",
+      "saved_at": "2026-07-23T21:40:50Z",
+      "symbol": "AAPL",
+      "side": "SELL",
+      "qty": 100.0,
+      "price": null,
+      "rationale": "Take-profit at target",
+      "thesis_id": "",
+      "status": "filled",
+      "source": "agent"
+    },
+    {
+      "id": "trade_eefe41d0e2",
+      "saved_at": "2026-07-23T21:40:50Z",
+      "symbol": "AVGO",
+      "side": "SELL",
+      "qty": 68.0,
+      "price": null,
+      "rationale": "Risk trim to max_single_name",
+      "thesis_id": "",
+      "status": "filled",
+      "source": "agent"
+    }
+  ]
+}

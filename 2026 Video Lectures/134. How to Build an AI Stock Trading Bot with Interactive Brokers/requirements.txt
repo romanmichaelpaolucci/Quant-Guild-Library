@@ -1,0 +1,4 @@
+openai>=1.0.0
+ib_insync>=0.9.86
+flask>=3.0.0
+python-dotenv>=1.0.0

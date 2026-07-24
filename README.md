@@ -17,6 +17,7 @@ Welcome to the **Quant Guild Library** — a curated collection of Jupyter Noteb
 ### 📅 2026 Video Lectures (Newest First)
 
 *Latest:*
+- **134.** [How to Build an AI Stock Trading Bot with Interactive Brokers](https://youtu.be/ogZmSXD_56U)
 - **133.** [Projects to Help you Become a Quant (Intermediate)](https://youtu.be/swPOLhSIBHo)
 - **132.** [Live Capital Management: My 2025 Crisis Alpha](https://youtu.be/yRDs4atfRB0)
 - **131.** [Quant Explains Investing at 5 Levels](https://youtu.be/tmkkddOeAsM)

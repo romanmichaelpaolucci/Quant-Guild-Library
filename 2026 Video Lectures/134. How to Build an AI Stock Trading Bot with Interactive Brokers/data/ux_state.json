@@ -1,0 +1,8 @@
+{
+  "automated": true,
+  "auto_every": 5,
+  "auto_unit": "days",
+  "auto_interval_sec": 432000,
+  "last_auto_run_at": "2026-07-23T21:40:56Z",
+  "updated_at": "2026-07-23T21:42:49Z"
+}

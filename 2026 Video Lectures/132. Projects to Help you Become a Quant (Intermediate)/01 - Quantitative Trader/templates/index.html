@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Market Making Simulator &middot; Quant Guild</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">◧</span>
+      <div>
+        <h1>Market Making Simulator</h1>
+        <p class="subtitle">Quant Trader &middot; Intermediate &middot; model risk in options market making</p>
+      </div>
+    </div>
+    <div class="ticker" id="statusPill">IDLE</div>
+  </header>
+
+  <main class="layout">
+    <!-- ================= CONTROL PANEL ================= -->
+    <aside class="panel controls">
+      <h2>Controls</h2>
+
+      <section class="ctl-group">
+        <h3>Models</h3>
+        <label>MM pricing model
+          <select id="pricing_model">
+            <option value="black_scholes">Black-Scholes (GBM)</option>
+            <option value="merton">Merton jump-diffusion</option>
+          </select>
+        </label>
+        <label>True market-path model
+          <select id="path_model">
+            <option value="gbm">Geometric Brownian Motion</option>
+            <option value="merton">Merton Jump-Diffusion</option>
+          </select>
+        </label>
+        <div class="hint" id="matchHint"></div>
+      </section>
+
+      <section class="ctl-group">
+        <h3>Contract</h3>
+        <div class="grid2">
+          <label>S&#8320; (spot)<input type="number" id="S0" step="1" /></label>
+          <label>Strike K<input type="number" id="K" step="1" /></label>
+          <label>Rolling maturity T (yrs)<input type="number" id="T" step="0.05" /></label>
+          <label>Type
+            <select id="option_type">
+              <option value="call">Call</option>
+              <option value="put">Put</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="ctl-group">
+        <h3>True dynamics</h3>
+        <div class="grid2">
+          <label>Drift &mu;<input type="number" id="mu" step="0.01" /></label>
+          <label>Vol &sigma;<input type="number" id="sigma" step="0.01" /></label>
+          <label>Rate r<input type="number" id="r" step="0.005" /></label>
+          <label>Jump &lambda;/yr<input type="number" id="lam" step="0.5" /></label>
+          <label>Jump mean<input type="number" id="jump_mean" step="0.01" /></label>
+          <label>Jump std<input type="number" id="jump_std" step="0.01" /></label>
+        </div>
+      </section>
+
+      <section class="ctl-group">
+        <h3>Market making</h3>
+        <div class="grid2">
+          <label>Half-spread<input type="number" id="half_spread" step="0.05" /></label>
+          <label>Quote size<input type="number" id="quote_size" step="1" /></label>
+          <label>Fill intensity<input type="number" id="fill_intensity" step="0.05" /></label>
+          <label>Risk aversion<input type="number" id="risk_aversion" step="0.01" /></label>
+          <label>MM vol (blank=true)<input type="number" id="pricing_sigma" step="0.01" placeholder="auto" /></label>
+        </div>
+      </section>
+
+      <section class="ctl-group">
+        <h3>Simulation</h3>
+        <div class="grid2">
+          <label>Horizon (yrs)<input type="number" id="horizon" step="0.25" /></label>
+          <label>Ticks<input type="number" id="n_steps" step="10" /></label>
+          <label>Hedge rebalances<input type="number" id="hedge_steps" step="5" /></label>
+          <label>Seed (blank=random)<input type="number" id="seed" placeholder="random" /></label>
+          <label>Speed (ms/tick)<input type="number" id="speed" step="5" value="30" /></label>
+        </div>
+      </section>
+
+      <div class="btn-row">
+        <button id="runBtn" class="btn primary">▶ Run &amp; Animate</button>
+        <button id="stopBtn" class="btn ghost">■ Stop</button>
+      </div>
+      <div class="btn-row">
+        <button id="presetMatch" class="btn tiny">Preset: matched</button>
+        <button id="presetSteamroller" class="btn tiny">Preset: steamroller</button>
+      </div>
+    </aside>
+
+    <!-- ================= CHARTS + STATS ================= -->
+    <section class="workspace">
+      <nav class="tab-bar">
+        <button class="tab active" data-tab="mm">Market Making</button>
+        <button class="tab" data-tab="dist">Return Distributions</button>
+      </nav>
+
+      <!-- ---------- Tab 1: Market Making ---------- -->
+      <div class="tab-panel" id="tab-mm">
+        <div class="stat-strip">
+          <div class="stat"><span class="lbl">Tick</span><span class="val" id="s_tick">–</span></div>
+          <div class="stat"><span class="lbl">Spot</span><span class="val" id="s_spot">–</span></div>
+          <div class="stat"><span class="lbl">Contracts</span><span class="val" id="s_inv">–</span></div>
+          <div class="stat"><span class="lbl">Avg edge/ct</span><span class="val" id="s_hedge">–</span></div>
+          <div class="stat"><span class="lbl">Realized P/L</span><span class="val" id="s_real">–</span></div>
+          <div class="stat"><span class="lbl">Expected (model)</span><span class="val" id="s_model">–</span></div>
+          <div class="stat"><span class="lbl">Expected (truth)</span><span class="val" id="s_truth">–</span></div>
+          <div class="stat"><span class="lbl">Model−Truth gap</span><span class="val" id="s_gap">–</span></div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-head">
+            <h3>Underlying &amp; MM quotes</h3>
+            <span class="chart-note">underlying (left axis) · live option bid/ask band (right axis)</span>
+          </div>
+          <div id="priceChart" class="chart"></div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-head">
+            <h3>Cumulative P/L</h3>
+            <span class="chart-note">realized equity (each trade banked at fill) vs expected edge — model &amp; truth</span>
+          </div>
+          <div id="pnlChart" class="chart"></div>
+        </div>
+
+        <div class="chart-card summary-card">
+          <div class="chart-head"><h3>Run summary</h3></div>
+          <div id="summaryBox" class="summary-box">Run a simulation to see the post-mortem.</div>
+        </div>
+      </div>
+
+      <!-- ---------- Tab 2: Return Distributions ---------- -->
+      <div class="tab-panel hidden" id="tab-dist">
+        <div class="chart-card">
+          <div class="chart-head">
+            <h3>Why the models price differently</h3>
+            <button id="distRunBtn" class="btn tiny">↻ Simulate distributions</button>
+          </div>
+          <p class="dist-intro">
+            Both models share the same diffusive drift &mu; and volatility &sigma; (set in the
+            control panel). <strong>Merton</strong> adds a Poisson jump component on top, which
+            fattens the tail — usually to the downside for negative jump means. That extra tail
+            risk is exactly what an option buyer pays up for, so the Merton price sits
+            <em>above</em> the Black-Scholes/GBM price. The histogram below makes the two
+            distributions — and therefore the pricing gap — visible.
+          </p>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-head">
+            <h3>Sample price paths</h3>
+            <span class="chart-note">GBM (smooth diffusion) vs Merton (diffusion + jumps)</span>
+          </div>
+          <div id="pathChart" class="chart"></div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-head">
+            <h3>Distribution of terminal returns</h3>
+            <span class="chart-note">simple return S<sub>T</sub>/S<sub>0</sub> − 1 over the option's maturity T</span>
+          </div>
+          <div id="histChart" class="chart"></div>
+        </div>
+
+        <div class="chart-card summary-card">
+          <div class="chart-head"><h3>Distribution moments</h3></div>
+          <div id="distStats" class="summary-box">Simulate to compare the two distributions.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Server-provided defaults for pre-filling the control panel.
+    window.SIM_DEFAULTS = {{ defaults | tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

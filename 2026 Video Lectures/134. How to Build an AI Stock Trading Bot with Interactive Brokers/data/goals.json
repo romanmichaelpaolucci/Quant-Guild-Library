@@ -1,0 +1,84 @@
+{
+  "current": {
+    "risk_tolerance": "Moderate-Aggressive",
+    "max_drawdown": "15%",
+    "target_return": "18% annualized",
+    "horizon": "12–24 months",
+    "max_single_name": "12% NAV",
+    "cash_floor": "5%",
+    "industries": [
+      "Semiconductors",
+      "Software",
+      "Healthcare",
+      "Industrials"
+    ],
+    "avoid": [
+      "Pure tobacco",
+      "SPACs"
+    ],
+    "notes": "Prefer liquid large/mid-cap; allow selective AI infrastructure overweights.",
+    "saved_at": "2026-07-23T20:50:46Z"
+  },
+  "history": [
+    {
+      "risk_tolerance": "Aggressive",
+      "max_drawdown": "13%",
+      "target_return": "18% annualized",
+      "horizon": "12–24 months",
+      "max_single_name": "12% NAV",
+      "cash_floor": "5%",
+      "industries": [
+        "Semiconductors",
+        "Software",
+        "Healthcare",
+        "Industrials"
+      ],
+      "avoid": [
+        "Pure tobacco",
+        "SPACs"
+      ],
+      "notes": "Prefer liquid large/mid-cap; allow selective AI infrastructure overweights.",
+      "saved_at": "2026-07-23T20:50:41Z"
+    },
+    {
+      "risk_tolerance": "Moderate-Aggressive",
+      "max_drawdown": "14%",
+      "target_return": "18% annualized",
+      "horizon": "12–24 months",
+      "max_single_name": "12% NAV",
+      "cash_floor": "5%",
+      "industries": [
+        "Semiconductors",
+        "Software",
+        "Healthcare",
+        "Industrials"
+      ],
+      "avoid": [
+        "Pure tobacco",
+        "SPACs"
+      ],
+      "notes": "Prefer liquid large/mid-cap; allow selective AI infrastructure overweights.",
+      "saved_at": "2026-07-23T20:50:41Z"
+    },
+    {
+      "risk_tolerance": "Moderate-Aggressive",
+      "max_drawdown": "15%",
+      "target_return": "18% annualized",
+      "horizon": "12–24 months",
+      "max_single_name": "12% NAV",
+      "cash_floor": "5%",
+      "industries": [
+        "Semiconductors",
+        "Software",
+        "Healthcare",
+        "Industrials"
+      ],
+      "avoid": [
+        "Pure tobacco",
+        "SPACs"
+      ],
+      "notes": "Prefer liquid large/mid-cap; allow selective AI infrastructure overweights.",
+      "saved_at": "2026-07-23T20:49:45Z"
+    }
+  ]
+}

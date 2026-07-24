@@ -1,0 +1,19 @@
+{
+  "risk_tolerance": "Moderate-Aggressive",
+  "max_drawdown": "15%",
+  "target_return": "18% annualized",
+  "horizon": "12–24 months",
+  "max_single_name": "12% NAV",
+  "cash_floor": "5%",
+  "industries": [
+    "Semiconductors",
+    "Software",
+    "Healthcare",
+    "Industrials"
+  ],
+  "avoid": [
+    "Pure tobacco",
+    "SPACs"
+  ],
+  "notes": "Prefer liquid large/mid-cap; allow selective AI infrastructure overweights."
+}

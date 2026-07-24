@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDE Solver &middot; Quant Guild Research</title>
+
+  <!-- MathJax for LaTeX rendering of the governing PDEs -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+  <!-- Plotly for interactive surfaces / charts -->
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="app">
+    <!-- ============================ SIDEBAR ============================ -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">&part;</div>
+        <div>
+          <h1>PDE Solver</h1>
+          <p class="brand-sub">Finite Differences &times; Monte-Carlo</p>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Framework</label>
+        <div class="segmented" id="framework-seg">
+          {% for key, meta in frameworks.items() %}
+          <button type="button" class="seg-btn{% if loop.first %} active{% endif %}"
+                  data-framework="{{ key }}"
+                  data-needs-barrier="{{ '1' if meta.needs_barrier else '0' }}">
+            {{ key|capitalize }}
+          </button>
+          {% endfor %}
+        </div>
+        <p class="framework-name" id="framework-name">
+          {{ frameworks['vanilla'].name }}
+        </p>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Option type</label>
+          <select id="option_type" class="control">
+            <option value="call">Call</option>
+            <option value="put">Put</option>
+          </select>
+        </div>
+        <div class="field-group barrier-only" style="display:none">
+          <label class="field-label">Barrier type</label>
+          <select id="barrier_type" class="control">
+            <option value="up-and-out">Up &amp; out</option>
+            <option value="down-and-out">Down &amp; out</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-title">Market &amp; contract</div>
+      <div class="field-grid">
+        <div class="field-group"><label class="field-label">Spot S<sub>0</sub></label>
+          <input class="control" id="S0" type="number" value="100" step="1" /></div>
+        <div class="field-group"><label class="field-label">Strike K</label>
+          <input class="control" id="K" type="number" value="100" step="1" /></div>
+        <div class="field-group"><label class="field-label">Rate r</label>
+          <input class="control" id="r" type="number" value="0.05" step="0.01" /></div>
+        <div class="field-group"><label class="field-label">Div yield q</label>
+          <input class="control" id="q" type="number" value="0.0" step="0.01" /></div>
+        <div class="field-group"><label class="field-label">Vol &sigma;</label>
+          <input class="control" id="sigma" type="number" value="0.20" step="0.01" /></div>
+        <div class="field-group"><label class="field-label">Maturity T (yr)</label>
+          <input class="control" id="T" type="number" value="1.0" step="0.25" /></div>
+        <div class="field-group barrier-only" style="display:none">
+          <label class="field-label">Barrier H</label>
+          <input class="control" id="barrier" type="number" value="130" step="1" /></div>
+        <div class="field-group digital-only" style="display:none">
+          <label class="field-label">Cash payout Q</label>
+          <input class="control" id="cash" type="number" value="1.0" step="0.5" /></div>
+      </div>
+
+      <div class="section-title">Finite-difference grid</div>
+      <div class="field-group">
+        <label class="field-label">Scheme</label>
+        <select id="scheme" class="control">
+          <option value="crank-nicolson">Crank-Nicolson (2nd order)</option>
+          <option value="implicit">Implicit (unconditionally stable)</option>
+          <option value="explicit">Explicit (conditionally stable)</option>
+        </select>
+      </div>
+      <div class="field-grid">
+        <div class="field-group"><label class="field-label">S-steps (M)</label>
+          <input class="control" id="M" type="number" value="200" step="10" /></div>
+        <div class="field-group"><label class="field-label">t-steps (N)</label>
+          <input class="control" id="N" type="number" value="200" step="10" /></div>
+      </div>
+
+      <div class="section-title">Monte-Carlo</div>
+      <div class="field-grid">
+        <div class="field-group"><label class="field-label">Paths</label>
+          <input class="control" id="n_paths" type="number" value="100000" step="10000" /></div>
+        <div class="field-group"><label class="field-label">Steps</label>
+          <input class="control" id="n_steps" type="number" value="252" step="10" /></div>
+      </div>
+
+      <button id="solve-btn" class="solve-btn">
+        <span class="solve-label">Solve PDE</span>
+        <span class="solve-spinner" style="display:none"></span>
+      </button>
+      <p class="hint">FD solves the PDE; MC simulates paths. They should agree.</p>
+    </aside>
+
+    <!-- ============================ MAIN ============================ -->
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h2 id="result-title">Black-Scholes PDE &middot; Vanilla European</h2>
+          <p class="muted" id="result-sub">Select parameters and solve to compare FD, MC and closed form.</p>
+        </div>
+        <div class="pde-badge" id="pde-badge"></div>
+      </div>
+
+      <!-- Governing equation panel -->
+      <section class="card equation-card">
+        <div class="card-head"><span class="dot"></span> Governing equation &amp; conditions</div>
+        <div class="equation-body">
+          <div class="eq-block" id="eq-pde"></div>
+          <div class="eq-conditions">
+            <div class="eq-cond"><span class="cond-tag">Terminal</span><span id="eq-terminal"></span></div>
+            <div class="eq-cond"><span class="cond-tag">Boundary</span><span id="eq-boundary"></span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Price comparison cards -->
+      <section class="price-row">
+        <div class="price-card fd">
+          <div class="price-card-label">Finite Difference</div>
+          <div class="price-card-value" id="price-fd">&mdash;</div>
+          <div class="price-card-meta" id="meta-fd">PDE solution</div>
+        </div>
+        <div class="price-card mc">
+          <div class="price-card-label">Monte-Carlo</div>
+          <div class="price-card-value" id="price-mc">&mdash;</div>
+          <div class="price-card-meta" id="meta-mc">95% CI</div>
+        </div>
+        <div class="price-card an">
+          <div class="price-card-label">Closed form</div>
+          <div class="price-card-value" id="price-an">&mdash;</div>
+          <div class="price-card-meta" id="meta-an">analytic</div>
+        </div>
+        <div class="price-card diff">
+          <div class="price-card-label">FD &minus; MC</div>
+          <div class="price-card-value" id="price-diff">&mdash;</div>
+          <div class="price-card-meta" id="meta-diff">agreement check</div>
+        </div>
+      </section>
+
+      <!-- Charts -->
+      <section class="chart-grid">
+        <div class="card chart-card wide">
+          <div class="card-head">
+            <span class="dot"></span> Price surface V(S, t)
+            <div class="view-toggle">
+              <button class="toggle-btn active" data-view="surface">3D</button>
+              <button class="toggle-btn" data-view="heatmap">Heatmap</button>
+            </div>
+          </div>
+          <div id="surface-plot" class="plot"></div>
+        </div>
+        <div class="card chart-card">
+          <div class="card-head"><span class="dot"></span> Value vs spot at t = 0</div>
+          <div id="slice-plot" class="plot"></div>
+        </div>
+        <div class="card chart-card">
+          <div class="card-head"><span class="dot"></span> FD vs MC vs analytic</div>
+          <div id="compare-plot" class="plot"></div>
+        </div>
+      </section>
+
+      <div id="error-banner" class="error-banner" style="display:none"></div>
+    </main>
+  </div>
+
+  <script id="frameworks-data" type="application/json">{{ frameworks|tojson }}</script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
