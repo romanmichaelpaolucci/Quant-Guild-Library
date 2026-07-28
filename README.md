@@ -17,12 +17,13 @@ Welcome to the **Quant Guild Library** — a curated collection of Jupyter Noteb
 ### 📅 2026 Video Lectures (Newest First)
 
 *Latest:*
+- **135.** [Arithmetic and Geometric Brownian Motion Masterclass](https://youtu.be/J23tj13WOK8)
+
+**Previous:**
 - **134.** [How to Build an AI Stock Trading Bot with Interactive Brokers](https://youtu.be/ogZmSXD_56U)
 - **133.** [Projects to Help you Become a Quant (Intermediate)](https://youtu.be/swPOLhSIBHo)
 - **132.** [Live Capital Management: My 2025 Crisis Alpha](https://youtu.be/yRDs4atfRB0)
 - **131.** [Quant Explains Investing at 5 Levels](https://youtu.be/tmkkddOeAsM)
-
-**Previous:**
 - **130.** [Projects to Help you Become a Quant (Beginner)](https://youtu.be/secelDZAmWc)
 - **129.** [How to get Higher Sharpe Ratios in a Trading Strategy](https://youtu.be/GTVBT1SQKWY)
 - **128.** [How to Calculate Portfolio Alpha & Beta (Python + Interactive Brokers)](https://youtu.be/A7zJARrdo3U)
