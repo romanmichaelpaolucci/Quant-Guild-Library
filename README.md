@@ -17,6 +17,7 @@ Welcome to the **Quant Guild Library** — a curated collection of Jupyter Noteb
 ### 📅 2026 Video Lectures (Newest First)
 
 *Latest:*
+- **136.** [How Volatility Drag Destroys Long-Term Wealth](https://youtu.be/pNRkxItN0qM)
 - **135.** [Arithmetic and Geometric Brownian Motion Masterclass](https://youtu.be/J23tj13WOK8)
 
 **Previous:**
