@@ -1,0 +1,11 @@
+# Pricing Library -- Quant Researcher / Advanced
+# Core dependencies (all pure-Python-friendly wheels).
+flask>=3.0
+numpy>=1.24
+scipy>=1.10
+plotly>=5.18
+
+# OPTIONAL C-accelerated path-signature library. The project auto-detects it
+# but runs completely without it (a pure-NumPy signature is used as fallback).
+# Uncomment to install if you want the faster backend:
+# iisignature>=0.24

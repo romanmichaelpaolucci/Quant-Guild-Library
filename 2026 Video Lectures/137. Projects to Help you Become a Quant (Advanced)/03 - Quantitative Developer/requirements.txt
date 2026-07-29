@@ -1,0 +1,8 @@
+# Core dependencies for the Latency & Cythonization project.
+numpy>=1.23
+matplotlib>=3.6
+cython>=3.0        # needed only to BUILD the compiled MC kernel (setup.py)
+
+# Optional: enables the numba @njit implementation in benchmark.py.
+# The project runs fine without it (import-guarded). Uncomment to install.
+# numba>=0.58

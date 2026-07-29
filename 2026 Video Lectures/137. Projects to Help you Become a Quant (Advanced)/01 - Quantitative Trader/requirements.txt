@@ -1,0 +1,15 @@
+# Algorithmic Trading System — dependencies
+#
+# NOTE ON ibapi:
+#   `ibapi` is the official Interactive Brokers Python API. On PyPI it is
+#   published as `ibapi`, but the canonical distribution ships with the TWS API
+#   installer from IBKR (https://interactivebrokers.github.io/). If `pip install
+#   ibapi` fails or is unavailable in your region, install the TWS API bundle
+#   and then, from its `source/pythonclient` folder, run `python setup.py install`.
+#   The application still runs WITHOUT ibapi (it falls back to DEMO mode).
+ibapi>=9.81
+
+numpy>=1.23
+pandas>=1.5
+
+# tkinter is part of the Python standard library (no pip install required).
