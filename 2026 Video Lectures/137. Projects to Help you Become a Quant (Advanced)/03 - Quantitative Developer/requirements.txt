@@ -3,6 +3,10 @@ numpy>=1.23
 matplotlib>=3.6
 cython>=3.0        # needed only to BUILD the compiled MC kernel (setup.py)
 
-# Optional: enables the numba @njit implementation in benchmark.py.
+# Dashboard (Flask + Plotly) — python app.py → http://127.0.0.1:5005
+flask>=3.0
+plotly>=5.18
+
+# Optional: enables the numba @njit implementation in benchmark.py / app.py.
 # The project runs fine without it (import-guarded). Uncomment to install.
 # numba>=0.58

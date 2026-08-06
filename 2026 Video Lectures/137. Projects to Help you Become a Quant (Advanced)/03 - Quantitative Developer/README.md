@@ -1,5 +1,7 @@
 # Latency & Cythonization — Quant Developer (Advanced)
 
+*Quant Developer · Advanced · Flask + Plotly*
+
 A hands-on project on **performance engineering for quants**. It teaches you to:
 
 1. **Measure latency rigorously** — compare algorithm implementations, relate
@@ -9,7 +11,8 @@ A hands-on project on **performance engineering for quants**. It teaches you to:
    numpy-vectorised and numba-JIT versions.
 
 The centerpiece is a before/after benchmark of the **same** Monte Carlo European
-option pricer written four ways.
+option pricer written four ways — available both as CLI scripts and as an
+interactive **Latency Lab** dashboard (same visual language as the Pricing Library).
 
 ---
 
@@ -54,6 +57,7 @@ Algorithm-latency benchmark headlines:
 
 | File | What it is |
 | --- | --- |
+| `app.py` | Flask **Latency Lab** dashboard (port **5005**): MC speed-up + algorithm latency tabs, Plotly + MathJax. |
 | `latency_benchmark.py` | Benchmarks sorting / search / reduction across input sizes; prints tables and saves `latency_results.png` (log-log). |
 | `mc_python.py` | Pure-Python Monte Carlo pricer — the intentionally slow baseline. |
 | `mc_numpy.py` | Numpy-vectorised pricer. |
@@ -61,11 +65,30 @@ Algorithm-latency benchmark headlines:
 | `setup.py` | Builds the Cython extension (`python setup.py build_ext --inplace`). |
 | `mc_numba.py` | Optional numba `@njit` pricer (import-guarded). |
 | `benchmark.py` | **Centerpiece**: runs every *available* implementation on the same seed, verifies agreement, prints a speed-up table, saves `mc_speedup.png`. Never crashes if Cython isn't built. |
-| `requirements.txt` | Dependencies. |
+| `requirements.txt` | Dependencies (`flask`, `plotly` for the dashboard). |
 
 ---
 
-## Quick start
+## Quick start — interactive dashboard
+
+```powershell
+pip install -r requirements.txt
+# (optional) enable Cython + numba for the full four-way comparison
+pip install numba
+python setup.py build_ext --inplace
+
+python app.py
+# open http://127.0.0.1:5005
+```
+
+Two tabs:
+
+1. **Monte Carlo Speed-up** — shared-path agreement check, median latency, and
+   speed-up bars for pure Python / numpy / Cython / numba (whichever are available).
+2. **Algorithm Latency** — log-log latency vs \(n\) for sorting, search, and
+   reduction, with live takeaway multipliers.
+
+## CLI benchmarks (headless)
 
 ```powershell
 # 1. Install dependencies
